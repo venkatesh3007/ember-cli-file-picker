@@ -65,6 +65,7 @@ export default Component.extend({
     if (files.length) {
       this.handleFiles(files);
     } else {
+      this.sendAction('fileLoaded');
       this.clearPreview();
     }
   },
