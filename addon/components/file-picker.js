@@ -28,6 +28,9 @@ export default Component.extend({
   selectOnClick: true,
   count: 0,
   errors: [],
+  defaultImageURL: null,
+  editIconDivClass: "editBackgroundImageHolder",
+  editIconClass: "icon-image-edit",
 
   progressStyle: computed('progressValue', function() {
     var width = this.get('progressValue') || 0;
@@ -42,8 +45,14 @@ export default Component.extend({
     if (this.get('hideFileInput')) {
       this.hideInput();
     }
-    this.hidePreview();
-    this.hideProgress();
+
+    if (this.get('defaultImageURL') != null) {
+      this.showPreview();
+      this.setDefaultPreviewImage();
+    } else {
+      this.hidePreview();
+      this.hideProgress();
+    }
 
     this.$('.file-picker__input').on(
       'change', bind(this, 'filesSelected')
@@ -65,7 +74,12 @@ export default Component.extend({
     if (files.length) {
       this.handleFiles(files);
     } else {
-      this.sendAction('fileLoaded');
+      if (this.get('defaultImageURL') !== null) {
+        this.showPreview();
+        this.setDefaultPreviewImage();
+      } else {
+        this.sendAction('fileLoaded');
+      }
       this.clearPreview();
     }
   },
@@ -121,7 +135,60 @@ export default Component.extend({
       (this.get('multiple') ? 'multiple' : 'single') + '">');
 
     this.hideProgress();
+    var editIconDiv = this.$(document.createElement('div'));
+    var editIcon = $(document.createElement('i'));
+    editIcon.addClass('fa');
+    editIcon.addClass('fa-edit');
+
+    if (this.get('editIconDivClass') != null) {
+      editIconDiv.addClass(this.get('editIconDivClass'));
+    }
+
+    if (this.get('editIconClass') != null) {
+      editIcon.addClass(this.get('editIconClass'));
+    }
+
+    editIconDiv.append(editIcon);
+
+    this.$('.file-picker__preview').append("")
     this.$('.file-picker__preview').append(image);
+    this.$('.file-picker__preview').append(editIconDiv);
+  },
+
+  // for appbrowzer dashboard
+
+  observeDefaultImageURL: function () {
+    if (this.get('defaultImageURL') !== null) {
+      this.showPreview();
+      this.setDefaultPreviewImage();
+    }
+  }.observes('defaultImageURL'),
+  
+  setDefaultPreviewImage: function () {
+    var defaultImageURL = this.get('defaultImageURL');
+    var image = this.$(
+      '<img src="' + defaultImageURL + '" class="file-picker__preview__image ' +
+      (this.get('multiple') ? 'multiple' : 'single') + '">');
+
+    this.hideProgress();
+    var editIconDiv = this.$(document.createElement('div'));
+    var editIcon = $(document.createElement('i'));
+    editIcon.addClass('fa');
+    editIcon.addClass('fa-edit');
+
+    if (this.get('editIconDivClass') != null) {
+      editIconDiv.addClass(this.get('editIconDivClass'));
+    }
+
+    if (this.get('editIconClass') != null) {
+      editIcon.addClass(this.get('editIconClass'));
+    }
+
+    editIconDiv.append(editIcon);
+
+    this.$('.file-picker__preview').append("")
+    this.$('.file-picker__preview').append(image);
+    this.$('.file-picker__preview').append(editIconDiv);
   },
 
   /**
@@ -171,6 +238,10 @@ export default Component.extend({
 
       reader[readAs](file);
     });
+  },
+
+  showPreview: function () {
+    this.$('.file-picker__preview').show();
   },
 
   hideInput: function() {
