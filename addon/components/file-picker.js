@@ -159,8 +159,11 @@ export default Component.extend({
 
   observeDefaultImageURL: function () {
     if (this.get('defaultImageURL') !== null) {
+      this.clearPreview();
       this.showPreview();
       this.setDefaultPreviewImage();
+    } else {
+      this.clearPreview();
     }
   }.observes('defaultImageURL'),
   
