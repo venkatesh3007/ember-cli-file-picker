@@ -75,12 +75,12 @@ export default Component.extend({
       this.handleFiles(files);
     } else {
       if (this.get('defaultImageURL') !== null) {
+        this.clearPreview();
         this.showPreview();
         this.setDefaultPreviewImage();
       } else {
         this.sendAction('fileLoaded');
       }
-      this.clearPreview();
     }
   },
 
